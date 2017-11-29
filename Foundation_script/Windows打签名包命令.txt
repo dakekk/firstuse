@@ -1,0 +1,8 @@
+set SVN=trunk/program
+set NEED_CLIENT=NO
+set PKG=ftp://192.168.123.46/ci-jobs/AB6.0.19/package/AnyBackup/server/Windows_All_x64/AnyBackupServer_Windows_All_x64-en-US-ContainClient.zip
+set PKG_TYPE=AnyBackup
+set WORKSPACE=C:\var\JFR\workspace\I_P_SERVER_WINDOWS_SIGN-test
+set M_R_CMSCRIPT=/CI_hudson
+set LANG=en-US
+set APP_PLATFORM=Windows_All_x64
