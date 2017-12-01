@@ -1,3 +1,4 @@
+#检查内存是否超过98%
 function check_disk()
 {
     disk_free_percent="`df -h $disk | sed -n "s/.* \([0-9]\+%\).*/\1/p" | cut -d "%" -f 1 `"
