@@ -1,0 +1,60 @@
+# CI 检查：对仓库现有的 Python 测试文件与 Shell 脚本做基础校验。
+# 触发方式：推送到 master、针对 master 的 Pull Request，以及手动触发。
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  pull_request:
+    branches:
+      - master
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  python:
+    name: Python 检查（test.py）
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 准备 Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: 语法检查：编译仓库内所有 .py 文件
+        run: python -m compileall -q .
+
+      - name: 运行 test.py
+        run: python test.py
+
+  shell:
+    name: Shell 脚本语法检查
+    runs-on: ubuntu-latest
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 用 bash -n 检查仓库内所有 .sh 文件
+        run: |
+          set -euo pipefail
+          count=0
+          while IFS= read -r -d '' file; do
+            count=$((count + 1))
+            echo "检查: ${file}"
+            bash -n "${file}"
+          done < <(find . -path ./.git -prune -o -type f -name '*.sh' -print0)
+          if [ "${count}" -eq 0 ]; then
+            echo "仓库内没有找到任何 .sh 文件" >&2
+            exit 1
+          fi
+          echo "共检查 ${count} 个 Shell 脚本，语法检查全部通过"
